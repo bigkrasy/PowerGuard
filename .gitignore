@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+.tox/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (големи файлове — regenerable)
+data/synthetic/*.parquet
+data/raw/
+data/processed/
+
+# Models (големи binary файлове)
+models/*.joblib
+models/*.pkl
+
+# Logs
+*.log
+logs/
+
+# .env
+.env
+.env.local
+
+.pytest_tmp/
+.pytest_cache/

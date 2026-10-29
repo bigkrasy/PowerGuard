@@ -1,0 +1,98 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: ${COMPOSE_PROJECT_NAME:-powerguard}:latest
+    container_name: ${COMPOSE_PROJECT_NAME:-powerguard}-api
+    ports:
+      - "${API_PORT:-8001}:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - IN_DOCKER=1
+    volumes:
+      - ../models:/app/models:ro
+      - ../data:/app/data:ro
+    restart: unless-stopped
+    networks:
+      - powerguard-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  dashboard:
+    image: ${COMPOSE_PROJECT_NAME:-powerguard}:latest
+    container_name: ${COMPOSE_PROJECT_NAME:-powerguard}-dashboard
+    command: >
+      streamlit run src/powerguard/api/dashboard.py
+      --server.port=8501
+      --server.address=0.0.0.0
+      --server.headless=true
+    ports:
+      - "${DASHBOARD_PORT:-8004}:8501"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - API_URL=http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - powerguard-net
+
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    container_name: ${COMPOSE_PROJECT_NAME:-powerguard}-prometheus
+    ports:
+      - "${PROMETHEUS_PORT:-8002}:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - powerguard-net
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana:11.5.0
+    container_name: ${COMPOSE_PROJECT_NAME:-powerguard}-grafana
+    ports:
+      - "${GRAFANA_PORT:-8003}:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ORG_NAME=Main Org.
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+      - GF_AUTH_DISABLE_SIGNOUT_MENU=false
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_SERVER_ROOT_URL=http://localhost:${GRAFANA_PORT:-9003}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    restart: unless-stopped
+    networks:
+      - powerguard-net
+    depends_on:
+      - prometheus
+
+networks:
+  powerguard-net:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:

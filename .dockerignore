@@ -1,0 +1,52 @@
+# Python
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.Python
+**/build/
+**/dist/
+**/*.egg-info/
+**/venv/
+**/.venv/
+
+# Testing
+**/.pytest_cache
+**/.pytest_tmp
+**/.coverage
+**/htmlcov/
+**/.tox/
+
+# Jupyter
+**/.ipynb_checkpoints/
+**/notebooks/
+
+# IDEs
+**/.vscode/
+**/.idea/
+
+# OS
+**/.DS_Store
+**/Thumbs.db
+
+# Git
+**/.git/
+**/.gitignore
+**/.github/
+
+# Docker
+**/docker/*.bat
+**/docker/*.md
+
+# Scripts (не са нужни в production image)
+**/scripts/
+
+# .bat файлове
+**/*.bat
+
+# Screenshots
+**/screenshots/
+
+# Env
+**/.env
+**/.env.*

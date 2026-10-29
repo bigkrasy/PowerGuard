@@ -1,0 +1,8 @@
+,AUC-PR,ROC-AUC
+One-Class SVM (alone),1.0,1.0
+Fusion (simple avg),1.0,1.0
+Autoencoder (alone),1.0,1.0
+Fusion (weighted),1.0,1.0
+Fusion (stacking),1.0,1.0
+XGBoost (alone),0.9999999999999999,1.0
+Isolation Forest (alone),0.560238754521234,0.8891101490971497

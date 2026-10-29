@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "powerguard"
+version = "1.0.0"
+description = "Real-time anomaly detection за електрическа подстанция"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["src"]

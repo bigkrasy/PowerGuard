@@ -1,0 +1,5 @@
+[run]
+omit =
+    src/powerguard/api/dashboard.py
+    */tests/*
+    */__init__.py

@@ -1,0 +1,1 @@
+"""Helper scripts за PowerGuard."""
